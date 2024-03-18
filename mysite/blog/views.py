@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
-from blog.models import Post
+from blog.models import Post, Comment
 from django.contrib.auth.models import User
 from blog.forms import CreatePostForm, CommentForm
 
@@ -99,3 +99,13 @@ def add_comment(request, post_id):
     else:
         form = CommentForm()
     return render(request, 'blog/add_comment.html', {'form': form})
+
+
+class CommentListView(ListView):
+    model = Comment
+    template_name = 'comment_list.html'
+    context_object_name = 'comments'
+
+    def get_queryset(self):
+        post_id = self.kwargs.get('post_id')
+        return Comment.objects.filter(post_id=post_id)
